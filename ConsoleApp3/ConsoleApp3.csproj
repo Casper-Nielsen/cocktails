@@ -54,10 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Alcoholic.cs" />
+    <Compile Include="DataManager.cs" />
     <Compile Include="Drink.cs" />
     <Compile Include="DrinksContext.cs" />
     <Compile Include="Glass.cs" />
     <Compile Include="Grade.cs" />
+    <Compile Include="GUI.cs" />
     <Compile Include="Ingredient.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Liquid.cs" />

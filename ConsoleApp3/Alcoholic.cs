@@ -16,8 +16,13 @@ namespace ConsoleApp3
         public float Percent
         {
             get { return percent; }
-            set { percent = value; }
+            private set { percent = value; }
         }
 
+        public Alcoholic() { }
+        public Alcoholic(string name, string color, float percent): base(name, color)
+        {
+            Percent = percent;
+        }
     }
 }

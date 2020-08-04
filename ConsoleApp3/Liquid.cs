@@ -15,8 +15,12 @@ namespace ConsoleApp3
         public string Color
         {
             get { return color; }
-            set { color = value; }
+            private set { color = value; }
         }
-
+        public Liquid() { }
+        public Liquid(string name, string color ) : base(name)
+        {
+            Color = color;
+        }
     }
 }

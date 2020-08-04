@@ -16,8 +16,13 @@ namespace ConsoleApp3
         public string Name
         {
             get { return name; }
-            set { name = value; }
+            private set { name = value; }
         }
 
+        public Ingredient() { }
+        public Ingredient( string name)
+        {
+            Name = name;
+        }
     }
 }
