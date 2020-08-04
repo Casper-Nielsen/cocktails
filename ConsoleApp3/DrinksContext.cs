@@ -15,7 +15,6 @@ namespace ConsoleApp3
         }
 
         public DbSet<Drink> Drinks { get; set; }
-        public DbSet<Glass> Glasss { get; set; }
         public DbSet<Ingredient> Ingredient { get; set; }
     }
 }

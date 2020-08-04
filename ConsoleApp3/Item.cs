@@ -19,20 +19,23 @@ namespace ConsoleApp3
             get { return unit; }
             set { unit = value; }
         }
-
-
         public float Amount
         {
             get { return amount; }
             set { amount = value; }
         }
-
-
         public Ingredient Ingredient
         {
             get { return ingredient; }
             set { ingredient = value; }
         }
 
+        public Item() { }
+        public Item(float amount, string unit, Ingredient ingredient)
+        {
+            Amount = amount;
+            Unit = unit;
+            Ingredient = ingredient;
+        }
     }
 }

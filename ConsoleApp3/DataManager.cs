@@ -23,7 +23,7 @@ namespace ConsoleApp3
         //gets all the drinks in the db
         public List<Drink> GetDrinks()
         {
-            return ctx.Drinks.Include("Glass").Include("Items").Include("Items.Ingredient").ToList<Drink>();
+            return ctx.Drinks.Include("Items").Include("Items.Ingredient").ToList<Drink>();
         }
         //gets all the base info of the drinks in the db
         public List<Drink> GetBasicDrinks()
@@ -34,7 +34,7 @@ namespace ConsoleApp3
         //gets one drink from the db using the id
         public Drink GetDrink(int id)
         {
-            return ctx.Drinks.Include("Glass").Include("Items").Include("Items.Ingredient").Where(p => p.DrinkID == id).ToList<Drink>()[0];
+            return ctx.Drinks.Include("Items").Include("Items.Ingredient").Where(p => p.DrinkID == id).ToList<Drink>()[0];
         }
         //adds a drink
         public void AddDrink(Drink drink)
@@ -49,7 +49,7 @@ namespace ConsoleApp3
         //removes a drink using the id
         public void RemoveDrink(int id)
         {
-            ctx.Drinks.Remove(ctx.Drinks.Include("Glass").Include("Items").Include("Items.Ingredient").Where(p => p.DrinkID == id).ToList<Drink>()[0]);
+            ctx.Drinks.Remove(ctx.Drinks.Include("Items").Include("Items.Ingredient").Where(p => p.DrinkID == id).ToList<Drink>()[0]);
         }
         //updates a drink
         public void UpdateDrink(Drink drink)

@@ -8,12 +8,17 @@ namespace ConsoleApp3
 {
     class GUI
     {
-        private DataManager dataManager;
+        private readonly DataManager dataManager;
         private List<Drink> drinks;
+
         public GUI()
         {
             dataManager = new DataManager();
         }
+
+        /// <summary>
+        /// starts the gui
+        /// </summary>
         public async Task StartupAsync()
         {
             Console.WriteLine("hello and welcome what do you want?");
@@ -21,6 +26,7 @@ namespace ConsoleApp3
             string input = "";
             int inputInt = 0;
             Console.WriteLine("what do you want to look at?");
+            Console.WriteLine("or you can create a new by using \"add\"");
             while (input != "exit")
             {
                 input = Console.ReadLine();
@@ -28,20 +34,39 @@ namespace ConsoleApp3
                 {
                     if (drinks.Any(p => p.DrinkID == inputInt))
                     {
-                        await ShowDrinkAsync(inputInt);
+                        ShowDrink(inputInt);
                     }
                 }
                 else if (input == "add")
                 {
-
+                    CreateDrink();
                 }
                 else
                 {
                     Console.WriteLine("not recognized input");
-                    await ShowMenuAsync();
                 }
+                await ShowMenuAsync();
             }
         }
+
+        /// <summary>
+        /// creates a drink
+        /// </summary>
+        public void CreateDrink()
+        {
+            Drink drink = new Drink();
+            Console.Clear();
+            Console.WriteLine("what shall the drink be called?");
+            drink.SetName(Console.ReadLine());
+            drink.AddItem(AddIngredientMenu());
+            dataManager.AddDrink(drink);
+            dataManager.Save();
+            ShowDrink(drink.DrinkID);
+        }
+
+        /// <summary>
+        /// shows the drinks 
+        /// </summary>
         public async Task ShowMenuAsync()
         {
             Task<List<Drink>> getDrinks = Task.Run(() => dataManager.GetBasicDrinks());
@@ -52,15 +77,35 @@ namespace ConsoleApp3
                 Console.WriteLine(drink.DrinkID + ": " + drink.Name);
             }
         }
-        public async Task ShowDrinkAsync(int id)
+
+        /// <summary>
+        /// a gui to show a drink with it options 
+        /// </summary>
+        /// <param name="id">the id of the drink</param>
+        public void ShowDrink(int id)
         {
             string input = "";
             while (input != "menu")
             {
+                Console.Clear();
                 Drink drink = dataManager.GetDrink(id);
+                Console.WriteLine(drink.Name);
+                Console.WriteLine();
                 foreach (Item item in drink.Items)
                 {
-                    Console.WriteLine(item.Amount + item.Unit + " - " + item.Ingredient.Name);
+                    Console.Write(item.Amount + item.Unit + " - " + item.Ingredient.Name + " ");
+                    if (item.Ingredient is Alcoholic alcoholic)
+                    {
+                        Console.WriteLine( alcoholic.Color + " " + alcoholic.Percent + "%");
+                    }
+                    else if (item.Ingredient is Liquid liquid)
+                    {
+                        Console.WriteLine(liquid.Color);
+                    }
+                    else
+                    {
+                        Console.WriteLine();
+                    }
                 }
                 Console.WriteLine("what do you want to do");
                 Console.WriteLine("add ingredient use \"add\"");
@@ -74,6 +119,17 @@ namespace ConsoleApp3
                     case "add":
                         drink.AddItem(AddIngredientMenu());
                         break;
+                    case "remove":
+                        drink.RemoveItem(RemoveItem(drink.Items));
+                        break;
+                    case "rename":
+                        Console.WriteLine("what is the new name of the drink?");
+                        drink.SetName(Console.ReadLine());
+                        break;
+                    case "delete":
+                        dataManager.RemoveDrink(drink);
+                        dataManager.Save();
+                        return;
                     default:
                         break;
                 }
@@ -81,19 +137,62 @@ namespace ConsoleApp3
                 dataManager.Save();
             }
         }
+
+
+        /// <summary>
+        /// a gui to select a item to remove
+        /// </summary>
+        /// <param name="items">the list of items</param>
+        /// <returns>the item the user want to remove</returns>
+        public Item RemoveItem(List<Item> items)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                Console.Write(i + ": " + items[i].Ingredient.Name);
+                if (items[i].Ingredient is Alcoholic alcoholic)
+                {
+                    Console.Write(i + ": " + alcoholic.Color + " " + alcoholic.Percent + "%");
+                }
+                else if (items[i].Ingredient is Liquid liquid)
+                {
+                    Console.Write(i + ": " + liquid.Color + "");
+                }
+                Console.WriteLine(" " + items[i].Amount + items[i].Unit);
+            }
+            string input = "";
+            while (input != "exit")
+            {
+                Console.WriteLine("What do you want to remove?");
+                input = Console.ReadLine();
+                if (int.TryParse(input, out int inputInt) && inputInt < items.Count)
+                {
+                    return items[inputInt];
+                }
+            }
+            return null;
+        }
+        
+        /// <summary>
+        /// a gui for making a complete item with Ingredient
+        /// </summary>
+        /// <returns>the item</returns>
         public Item AddIngredientMenu()
         {
             List<Ingredient> ingredients = dataManager.GetIngredients();
             for (int i = 0; i < ingredients.Count; i++)
             {
                 Console.Write(i + ": " + ingredients[i].Name);
-                if (ingredients[i] is Alcoholic)
+                if (ingredients[i] is Alcoholic alcoholic)
                 {
-                    Console.WriteLine(" " + ((Alcoholic)ingredients[i]).Color + " " + ((Alcoholic)ingredients[i]).Percent + "%");
+                    Console.WriteLine(" " + alcoholic.Color + " " + alcoholic.Percent + "%");
                 }
-                else if (ingredients[i] is Liquid)
+                else if (ingredients[i] is Liquid liquid)
                 {
-                    Console.WriteLine(" " + ((Liquid)ingredients[i]).Color);
+                    Console.WriteLine(" " + liquid.Color);
+                }
+                else
+                {
+                    Console.WriteLine();
                 }
             }
             string input = "";
@@ -121,6 +220,10 @@ namespace ConsoleApp3
             return null;
         }
 
+        /// <summary>
+        /// a gui for createting most of the Item
+        /// </summary>
+        /// <returns>the part complete item</returns>
         public Item CreatePartItem()
         {
             Item item = new Item();
@@ -131,8 +234,7 @@ namespace ConsoleApp3
             {
                 Console.WriteLine("how much do you use");
                 input = Console.ReadLine();
-                float inputFloat = 0;
-                if (float.TryParse(input, out inputFloat))
+                if (float.TryParse(input, out float inputFloat))
                 {
                     item.Amount = inputFloat;
                     return item;
@@ -140,6 +242,11 @@ namespace ConsoleApp3
             }
             return null;
         }
+        
+        /// <summary>
+        /// a gui for createing a Ingredient
+        /// </summary>
+        /// <returns>the ingredient</returns>
         public Ingredient CreateIngredient()
         {
             Console.WriteLine("what is the name of your ingredient?");
@@ -150,8 +257,7 @@ namespace ConsoleApp3
             {
                 Console.WriteLine("does it have any percent? if it dont have any just hit enter");
                 string input = Console.ReadLine();
-                float inputFloat = 0;
-                if (input != "" && float.TryParse(input, out inputFloat) && inputFloat > 0)
+                if (input != "" && float.TryParse(input, out float inputFloat) && inputFloat > 0)
                 {
                     return new Alcoholic(name, color, inputFloat);
                 }

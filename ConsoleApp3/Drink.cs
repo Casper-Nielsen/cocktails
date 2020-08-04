@@ -13,19 +13,11 @@ namespace ConsoleApp3
         private string name;
         private List<Item> items;
 
-        public int Glass_ID { get; set; }
-        [ForeignKey("Glass_ID")]
-        private Glass glass;
 
         public List<Item> Items
         {
             get { return items; }
             set { items = value; }
-        }
-        public Glass Glass
-        {
-            get { return glass; }
-            set { glass = value; }
         }
         public string Name
         {
@@ -33,11 +25,13 @@ namespace ConsoleApp3
             set { name = value; }
         }
 
-        public Drink() { }
-        public Drink(string name, Glass glass, List<Item> items)
+        public Drink() 
+        {
+            items = new List<Item>();
+        }
+        public Drink(string name, List<Item> items)
         {
             Name = name;
-            Glass = glass;
             Items = items;
         }
 
@@ -66,10 +60,6 @@ namespace ConsoleApp3
                     Items.RemoveAt(index);
                 }
             }
-        }
-        public void SetGlass(Glass glass)
-        {
-            Glass = glass;
         }
         public void SetName(string name)
         {
